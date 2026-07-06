@@ -158,6 +158,7 @@ def security_alert_node(node_input: str) -> Event:
     )
 
 # 5. Orchestrator Node
+@node(rerun_on_resume=True)
 async def orchestrator(ctx: Context, node_input: str) -> Event:
     # Check if a sensitive action (scheduling, changing schedule, alerts) is requested
     # and not yet approved by HITL
@@ -182,6 +183,7 @@ async def orchestrator(ctx: Context, node_input: str) -> Event:
     return Event(output=response_text, route="__DEFAULT__")
 
 # 6. Human Approval Node
+@node(rerun_on_resume=True)
 async def human_approval_node(ctx: Context, node_input: str):
     if not ctx.resume_inputs or "confirm_action" not in ctx.resume_inputs:
         yield RequestInput(
@@ -190,7 +192,13 @@ async def human_approval_node(ctx: Context, node_input: str):
         )
         return
 
-    confirm_response = ctx.resume_inputs.get("confirm_action", "").strip().lower()
+    confirm_val = ctx.resume_inputs.get("confirm_action", "")
+    if isinstance(confirm_val, dict):
+        confirm_response = confirm_val.get("response", "")
+    else:
+        confirm_response = confirm_val
+    confirm_response = str(confirm_response).strip().lower()
+
     if confirm_response in ["yes", "y", "confirm", "ok"]:
         yield Event(
             output=ctx.state.get("pending_action", node_input),
@@ -205,6 +213,7 @@ async def human_approval_node(ctx: Context, node_input: str):
         )
 
 # 7. Execute Action Node
+@node(rerun_on_resume=True)
 async def execute_action_node(ctx: Context, node_input: str) -> Event:
     # Rerun the orchestrator now that approved is set to True
     response = await ctx.run_node(care_coordinator, node_input=node_input)
