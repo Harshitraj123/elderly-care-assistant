@@ -44,27 +44,27 @@ graph TD
     
     ExecAction --> Final
     
-    subgraph Sub-Agents (Connected to MCP Server)
-        MedMgr[Medication Manager]
-        ApptSch[Appointment Scheduler]
+    subgraph SA["Sub-Agents (Connected to MCP Server)"]
+        MedMgr["Medication Manager"]
+        ApptSch["Appointment Scheduler"]
     end
     
-    Orchestrator -. AgentTool .-> MedMgr
-    Orchestrator -. AgentTool .-> ApptSch
+    Orchestrator -. "AgentTool" .-> MedMgr
+    Orchestrator -. "AgentTool" .-> ApptSch
     
-    subgraph Stdio MCP Server
-        get_meds[get_medications]
-        log_med[record_med_adherence]
-        get_appts[get_appointments]
-        sch_appt[schedule_appointment]
-        alert_cg[alert_caregiver]
+    subgraph MS["Stdio MCP Server"]
+        get_meds["get_medications"]
+        log_med["record_med_adherence"]
+        get_appts["get_appointments"]
+        sch_appt["schedule_appointment"]
+        alert_cg["alert_caregiver"]
     end
     
-    MedMgr -. McpToolset .-> get_meds
-    MedMgr -. McpToolset .-> log_med
-    ApptSch -. McpToolset .-> get_appts
-    ApptSch -. McpToolset .-> sch_appt
-    ApptSch -. McpToolset .-> alert_cg
+    MedMgr -. "McpToolset" .-> get_meds
+    MedMgr -. "McpToolset" .-> log_med
+    ApptSch -. "McpToolset" .-> get_appts
+    ApptSch -. "McpToolset" .-> sch_appt
+    ApptSch -. "McpToolset" .-> alert_cg
 ```
 
 ## How to Run
